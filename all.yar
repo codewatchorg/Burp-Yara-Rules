@@ -977,6 +977,21 @@ condition:
 	14 of them
 }
 
+rule generic_javascript_obfuscation
+{
+meta:
+	author = "Josh Berry"
+	date = "2016-06-26"
+	description = "JavaScript Obfuscation Detection"
+	sample_filetype = "js-html"
+strings:
+	$string0 = /eval\(([\s]+)?unescape\(/ nocase
+	$string1 = /eval\(([\s]+)?atob\(/ nocase
+	$string2 = /var([\s]+)?([a-zA-Z_$])+([a-zA-Z0-9_$]+)?([\s]+)?=([\s]+)?\[([\s]+)?\"\\x[0-9a-fA-F]+/ nocase
+condition:
+	$string0 or $string1 or $string2
+}
+
 rule possible_includes_base64_packed_functions  
 { 
 	meta: 
@@ -984,11 +999,11 @@ rule possible_includes_base64_packed_functions
 		hide = true 
 		desc = "Detects possible includes and packed functions" 
 	strings: 
-		$f = /(;base64|base64,)/ nocase 
+		$f = /(atob|btoa|;base64|base64,)/ nocase
 		//$ff = /(?:[A-Za-z0-9]{4}){2,}(?:[A-Za-z0-9]{2}[AEIMQUYcgkosw048]=|[A-Za-z0-9][AQgw]==)/ nocase 
 		$fff = /([A-Za-z0-9]{4})*([A-Za-z0-9]{2}==|[A-Za-z0-9]{3}=|[A-Za-z0-9]{4})/ 
 	condition: 
-		$f and $fff 
+		$f and $fff
 } 
  
 rule BeEF_browser_hooked {
