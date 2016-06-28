@@ -1,4 +1,4 @@
-rule 0x88_js2
+rule zerox88_js2
 {
 meta:
 	author = "Josh Berry"
@@ -24,7 +24,7 @@ condition:
 	11 of them
 }
 
-rule 0x88_js3
+rule zerox88_js3
 {
 meta:
 	author = "Josh Berry"
@@ -380,6 +380,7 @@ strings:
 	$string12 = "workpack/PK"
 condition:
 	12 of them
+}
 
 rule blackhole_basic : exploit_kit
 {
@@ -389,7 +390,7 @@ rule blackhole_basic : exploit_kit
         $a
 }
 
-rule bleedinglife2_adobe-2010-1297_exploit
+rule bleedinglife2_adobe_2010_1297_exploit
 {
 meta:
 	author = "Josh Berry"
@@ -421,7 +422,7 @@ condition:
 	17 of them
 }
 
-rule bleedinglife2_adobe-2010-2884_exploit
+rule bleedinglife2_adobe_2010_2884_exploit
 {
 meta:
 	author = "Josh Berry"
@@ -477,7 +478,7 @@ condition:
 	9 of them
 }
 
-rule bleedinglife2_java-2010-0842_exploit
+rule bleedinglife2_java_2010_0842_exploit
 {
 meta:
 	author = "Josh Berry"
@@ -976,50 +977,6 @@ condition:
 	14 of them
 }
 
-rule obfuscated_js
-{
-   meta:
-      description = "Obfuscated Javascript Detection"
-      author = "ian@politoinc.com"
-      date = "26 Jan 2016"
-      version = "1"
-      impact = 3
-      hide = false
-   strings:
-      $a = "eval"
-	  $b = "%"
-	  $c = "\\x"
-	  $d = ".fromCharCode"
-   condition:
-      $a and (#b > 20 or #c > 20 or $d)
-}
-
-rule MSIEUseAfterFree: decodedOnly 
-{ 
-	meta: 
-		ref = "CVE-2010-0249" 
-		hide = true 
-        impact = 5 
-	strings: 
-		$cve20100249_1 = "createEventObject" nocase fullword 
-		$cve20100249_2 = "getElementById" nocase fullword 
-		$cve20100249_3 = "onload" nocase fullword 
-		$cve20100249_4 = "srcElement" nocase fullword 
-	condition: 
-		all of them 
-} 
-
-rule BasicObfuscatedJavaSriptInjection 
-{ 
-	meta: 
-		impact = 0 
-		desc = "Detects basic obfuscated JavaScript script injections" 
-	strings: 
-		$s10 = /(?:\/[\w\s]+\/\.)|(?:=\s*\/\w+\/\s*\.)|(?:\[\s*\/\w+)|(?:(?:this|window|top|parent|frames|self|content)\[\s*\w)/ nocase 
-	condition: 
-		$s10 
-} 
-
 rule possible_includes_base64_packed_functions  
 { 
 	meta: 
@@ -1027,43 +984,13 @@ rule possible_includes_base64_packed_functions
 		hide = true 
 		desc = "Detects possible includes and packed functions" 
 	strings: 
-		$f = /(?:\w+script:|@import[^\w]|;base64|base64,)|(?:\w+\s*\([\w\s]+,[\w\s]+,[\w\s]+,[\w\s]+,[\w\s]+,[\w\s]+\))/ nocase 
+		$f = /(;base64|base64,)/ nocase 
 		//$ff = /(?:[A-Za-z0-9]{4}){2,}(?:[A-Za-z0-9]{2}[AEIMQUYcgkosw048]=|[A-Za-z0-9][AQgw]==)/ nocase 
-		$fff = /(?:[A-Za-z0-9]{4})*(?:[A-Za-z0-9]{2}==|[A-Za-z0-9]{3}=|[A-Za-z0-9]{4})/ 
+		$fff = /([A-Za-z0-9]{4})*([A-Za-z0-9]{2}==|[A-Za-z0-9]{3}=|[A-Za-z0-9]{4})/ 
 	condition: 
 		$f and $fff 
 } 
  
-
-rule Attribute_breaking_or_obfuscated 
-{ 
- 	meta: 
-		impact = 4 
-		hide = true 
-		desc = "finds attribute breaking injections including obfuscated attributes" 
-	strings: 
-		$m = /(?:[\s\/"]+[-\w\/\\\*]+\s*=.+(?:\/\s*>))/ nocase 
-		$n = /(?:[^\w+-;]\s+[\w\/\\\*]+\s*=)/ nocase 
-		$o = /(?:\"+.*[<=]\\s*\"[^\"]+\")|(?:\"\\w+\\s*=)|(?:>\\w=\\\/)/ nocase 
-
- 
-	condition: 
-		$m and $n and $o 
-} 
- 
-rule ObfuscationPattern_javaScript 
-{  
-	meta: 
-		impact = 0 
-	strings: 
-		$eval = "eval" nocase fullword 
-		$charcode = "String.fromCharCode" nocase fullword 
-		$loc = "location" nocase fullword 
-		$deanEdwards = "function(p,a,c,k,e,d)" nocase 
-	condition: 
-		2 of them 
-} 
-
 rule BeEF_browser_hooked {
 	meta:
 		description = "Yara rule related to hook.js, BeEF Browser hooking capability"
@@ -1543,21 +1470,6 @@ rule js_splitting : PDF
                                 
         condition:
                 $magic at 0 and $js and 1 of ($s*)
-}
-
-rule header_evasion : PDF
-{
-        meta:
-                author = "Glenn Edwards (@hiddenillusion)"
-                description = "3.4.1, 'File Header' of Appendix H states that ' Acrobat viewers require only that the header appear somewhere within the first 1024 bytes of the file.'  Therefore, if you see this trigger then any other rule looking to match the magic at 0 won't be applicable"
-                ref = "http://wwwimages.adobe.com/www.adobe.com/content/dam/Adobe/en/devnet/pdf/pdfs/pdf_reference_1-7.pdf"
-                version = "0.1"
-                weight = 3
-
-        strings:
-                $magic = { 25 50 44 46 }
-        condition:
-                $magic in (5..1024) and #magic == 1
 }
 
 rule BlackHole_v2 : PDF
